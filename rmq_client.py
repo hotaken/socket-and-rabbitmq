@@ -38,7 +38,10 @@ class RMQClient:
             message = input()
 
             if message == "0":
-                self.connection.close()
+                try:
+                    self.connection.close()
+                except:
+                    pass
                 exit(0)
             try:
                 if not os.path.isfile(message):
@@ -53,7 +56,10 @@ class RMQClient:
                     self.send_data(data=encrypted_data)
             except:
                 print("Server connection lost")
-                self.connection.close()
+                try:
+                    self.connection.close()
+                except:
+                    pass
                 input()
                 exit(0)
 
