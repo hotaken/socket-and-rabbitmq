@@ -1,9 +1,11 @@
 import pika
+from pika import connection
 import settings
 import json
 from datetime import datetime
 import sqlite3
 from os import system
+import os.path
 
 
 class RMQClient:
@@ -34,17 +36,26 @@ class RMQClient:
         while True:
             print("Type path to sqlite or 0 to exit")
             message = input()
+
             if message == "0":
                 self.connection.close()
                 exit(0)
             try:
+                if not os.path.isfile(message):
+                    raise Exception
                 orders = self.read_from_sqlite(message)
             except:
                 print("Smth wrong with sqlite file")
                 continue
-            for item in orders:
-                encrypted_data = json.dumps(item)
-                self.send_data(data=encrypted_data)
+            try:
+                for item in orders:
+                    encrypted_data = json.dumps(item)
+                    self.send_data(data=encrypted_data)
+            except:
+                print("Server connection lost")
+                self.connection.close()
+                input()
+                exit(0)
 
 
 if __name__ == '__main__':

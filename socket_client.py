@@ -1,3 +1,4 @@
+import os
 import settings
 from Socket import Socket
 import json
@@ -63,6 +64,8 @@ class SocketClient(Socket):
             if message == "0":
                 exit(0)
             try:
+                if not os.path.isfile(message):
+                    raise Exception
                 orders = await self.read_from_sqlite(message)
             except:
                 print("Smth wrong with sqlite file")
