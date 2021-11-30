@@ -31,9 +31,13 @@ class Socket:
 
     async def _recv_message(self, listened_socket: socket.socket, message_len: int):
         message = bytearray()
-
+        packet_size = 64
         while len(message) < message_len:
-            packet = await self.main_loop.sock_recv(listened_socket, message_len - len(message))
+            if message_len - len(message) > packet_size:
+                reading_size = packet_size
+            else:
+                reading_size = message_len - len(message)
+            packet = await self.main_loop.sock_recv(listened_socket, reading_size)
             if packet is None:
                 return None
 
